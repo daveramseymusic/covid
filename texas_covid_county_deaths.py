@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import time
 import urllib.request
 from dateutil.parser import parse
+from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
 
 
 #download deaths file from Texas health dept.
@@ -65,46 +67,101 @@ ave_deaths_last_seven_days = deaths_last_seven_days / 7
 ave_deaths_week_before = deaths_week_before / 7
 
 
-# print total deaths
-print('\n' + county +' county' + '\n''\n' + '  Total Deaths:' + '\n')
-print('Last 7 days' +'\n' '(ending ' + str(most_recent_date) + '): ' + str(deaths_last_seven_days))
-print('week before' +'\n'+ '(ending ' + str(two_week_ago_date) + '): ' + str(deaths_week_before))
-
-#print ave deaths per day
-print('\n' + '  Ave Deaths/day:' + '\n')
-print('Last 7 days' +'\n' '(ending ' + str(most_recent_date) + '): ' + str(ave_deaths_last_seven_days))
-print('week before' +'\n'+ '(ending ' + str(two_week_ago_date) + '): ' + str(ave_deaths_week_before))
-
-# create a function that finds the last day a death was reported:
-recent_repeated_data = tarrant_df[tarrant_df.tarrant == today_deaths]
-# one_day = datetime.timedelta(days=1)
-date_most_recent_update = recent_repeated_data.dates.iloc[0]
-days_since_update = date_most_recent_update - most_recent_date - timedelta(days=1)
-
-#print date of last reported death:
-print('last day there was a change in deaths reported: ' + str(date_most_recent_update))
-print('number of days since last update:   ' + str(days_since_update))
 
 
+#### stuff befor graffing
+# # print total deaths
+# print('\n' + county +' county' + '\n''\n' + '  Total Deaths:' + '\n')
+# print('Last 7 days' +'\n' '(ending ' + str(most_recent_date) + '): ' + str(deaths_last_seven_days))
+# print('week before' +'\n'+ '(ending ' + str(two_week_ago_date) + '): ' + str(deaths_week_before))
 
-# df2 = df.loc[(df.column1 == 'row_i_like'), ['column_i_like']]
+# #print ave deaths per day
+# print('\n' + '  Ave Deaths/day:' + '\n')
+# print('Last 7 days' +'\n' '(ending ' + str(most_recent_date) + '): ' + str(ave_deaths_last_seven_days))
+# print('week before' +'\n'+ '(ending ' + str(two_week_ago_date) + '): ' + str(ave_deaths_week_before))
 
-#print
-print(tarrant_df.iloc[-15:,1:])
+# # create a function that finds the last day a death was reported:
+# recent_repeated_data = tarrant_df[tarrant_df.tarrant == today_deaths]
+# # one_day = datetime.timedelta(days=1)
+# date_most_recent_update = recent_repeated_data.dates.iloc[0]
+# days_since_update = date_most_recent_update - most_recent_date - timedelta(days=1)
+
+# #print date of last reported death:
+# print('last day there was a change in deaths reported: ' + str(date_most_recent_update))
+# print('number of days since last update:   ' + str(days_since_update))
 
 
-most_recent_updated_death_total_df = tarrant_df.loc[(tarrant_df.dates == date_most_recent_update), ['tarrant']]
-most_recent_updated_death_total = most_recent_updated_death_total_df.iloc[0,0]
-print(most_recent_updated_death_total)
 
-week_before_mrud_total_df = tarrant_df.loc[(tarrant_df.dates == date_most_recent_update - timedelta(days=8)), ['tarrant']]
-week_before_mrud_total = week_before_mrud_total_df.iloc[0,0]
-print(week_before_mrud_total)
+# # df2 = df.loc[(df.column1 == 'row_i_like'), ['column_i_like']]
 
 
-updated_last_seven_ave = (most_recent_updated_death_total - week_before_mrud_total) / 7
-print(updated_last_seven_ave)
+# print(tarrant_df.iloc[-15:,1:])
 
+# #find the last day deaths actually changed. then save the last day to a variable.
+# most_recent_updated_death_total_df = tarrant_df.loc[(tarrant_df.dates == date_most_recent_update), ['tarrant']]
+# most_recent_updated_death_total = most_recent_updated_death_total_df.iloc[0,0]
+# print(most_recent_updated_death_total)
+
+# week_before_mrud_total_df = tarrant_df.loc[(tarrant_df.dates == date_most_recent_update - timedelta(days=8)), ['tarrant']]
+# week_before_mrud_total = week_before_mrud_total_df.iloc[0,0]
+# print(week_before_mrud_total)
+
+
+# updated_last_seven_ave = (most_recent_updated_death_total - week_before_mrud_total) / 7
+# print(updated_last_seven_ave)
+
+
+####stuff that worked ends
+
+# drinks = ["cappuccino", "latte", "chai", "americano", "mocha", "espresso"]
+# sales =  [91, 76, 56, 66, 52, 27]
+
+# ax = plt.subplot()
+# plt.bar(range(len(drinks)), sales)
+# ax.set_xticks(range(len(drinks)))
+# ax.set_xticklabels(drinks)
+# plt.show()
+
+# dates = ...
+#deaths = ....  
+#how do I create a list from the deaths column?  I wonder if I already know with a lambda?
+    # use this: col_one_list = df['column_name1'].tolist()
+
+
+
+
+#undue the line where you make them floats.
+#make data integers:
+
+# last_eight = tarrant_df.iloc[-8:-1,2]
+# last_eight_dates = tarrant_df.iloc[-8:-1,1]
+
+
+###trying to reformat.
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+ax.bar(tarrant_df.iloc[-150:,1], tarrant_df.iloc[-150:,2], width=0.3, align='center')
+
+# ax = plt.subplot()
+# plt.bar(tarrant_df.iloc[-8:-1,1], tarrant_df.iloc[-8:-1,2])
+# ax.set_xticks(range(8))
+# ax.set_xticklabels(tarrant_df.iloc[-8:-1,1], rotation=30)
+# ax.xaxis_date()
+plt.show()
+
+#set y_values to equal last 7 days
+    #create list of the last 7 days from the df you've created.
+        #try using today's deaths variable
+        # daily_deaths_lsd = [i for i in tarrant_df.iloc[-1,2]
+# y_values = [range(700)]
+
+# plt.plot(x_values, y_values)
+
+
+
+
+##things I thought to do before I started graphing:
 ##now make it so it's got he average for the recent update and the week before that...
 
 
@@ -113,3 +170,5 @@ print(updated_last_seven_ave)
 # ##create function here:
 
 # #filter dates:
+
+## so figure out the earliest unchanged day.  and track how much they change over time.  
