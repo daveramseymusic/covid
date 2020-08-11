@@ -17,7 +17,7 @@ data_xls = pd.read_excel('test.xlsx')
 data_xls.to_csv('new_covid_test.csv', encoding='utf-8')
 c_cov = pd.read_csv('new_covid_test.csv')
 
-# #pivot table so the column is county name 
+##pivot table so the columns ar county name 
 c_cov = c_cov.set_index('Unnamed: 0').T
 # c_cov.reset_index()
 
@@ -44,7 +44,6 @@ tarrant_df = c_cov[[ 'dates', 'tarrant']].reset_index()
 #make data integers:
 tarrant_df.iloc[1:,2] = pd.to_numeric(tarrant_df.iloc[1:,2], downcast='integer')
 
-
 #variable for today's deaths
 today_deaths = tarrant_df.iloc[-1,2]
 
@@ -65,9 +64,6 @@ county = (tarrant_df.iloc[0,2])
 # #create average deaths per day for each week:
 ave_deaths_last_seven_days = deaths_last_seven_days / 7
 ave_deaths_week_before = deaths_week_before / 7
-
-
-
 
 #### stuff befor graffing
 # # print total deaths
@@ -91,10 +87,6 @@ ave_deaths_week_before = deaths_week_before / 7
 # print('number of days since last update:   ' + str(days_since_update))
 
 
-
-# # df2 = df.loc[(df.column1 == 'row_i_like'), ['column_i_like']]
-
-
 # print(tarrant_df.iloc[-15:,1:])
 
 # #find the last day deaths actually changed. then save the last day to a variable.
@@ -111,45 +103,19 @@ ave_deaths_week_before = deaths_week_before / 7
 # print(updated_last_seven_ave)
 
 
-####stuff that worked ends
 
-# drinks = ["cappuccino", "latte", "chai", "americano", "mocha", "espresso"]
-# sales =  [91, 76, 56, 66, 52, 27]
-
-# ax = plt.subplot()
-# plt.bar(range(len(drinks)), sales)
-# ax.set_xticks(range(len(drinks)))
-# ax.set_xticklabels(drinks)
-# plt.show()
-
-# dates = ...
-#deaths = ....  
-#how do I create a list from the deaths column?  I wonder if I already know with a lambda?
-    # use this: col_one_list = df['column_name1'].tolist()
-
-
-
-
-#undue the line where you make them floats.
-#make data integers:
-
-# last_eight = tarrant_df.iloc[-8:-1,2]
-# last_eight_dates = tarrant_df.iloc[-8:-1,1]
-
-
-###trying to reformat.
-
+#print bar graph of Tarrant County Deaths
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-ax.bar(tarrant_df.iloc[-150:,1], tarrant_df.iloc[-150:,2], width=0.3, align='center')
-
-# ax = plt.subplot()
-# plt.bar(tarrant_df.iloc[-8:-1,1], tarrant_df.iloc[-8:-1,2])
-# ax.set_xticks(range(8))
-# ax.set_xticklabels(tarrant_df.iloc[-8:-1,1], rotation=30)
-# ax.xaxis_date()
+ax.bar(tarrant_df.iloc[-(len(tarrant_df.dates)-1):,1], tarrant_df.iloc[-(len(tarrant_df.dates)-1):,2], width=0.8, align='center')
+plt.xlabel('Dates')
+plt.ylabel('Deaths')
+plt.title('Tarrant County Total Covid Deaths over Time')
 plt.show()
 
+
+
+##figure out daily deaths to watch rate:
 #set y_values to equal last 7 days
     #create list of the last 7 days from the df you've created.
         #try using today's deaths variable
