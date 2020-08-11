@@ -17,19 +17,11 @@ data_xls = pd.read_excel('test.xlsx')
 data_xls.to_csv('new_covid_test.csv', encoding='utf-8')
 c_cov = pd.read_csv('new_covid_test.csv')
 
-# ##pivot table so the columns ar county name 
-# c_cov = c_cov.set_index('Unnamed: 0').T
-# # c_cov.reset_index()
-
 #shorten the publishing date info in c_cov
-#jeopardy.rename(columns=lambda x: x.strip(), inplace=True)
 c_cov.rename(columns=lambda x: x.replace('COVID-19 Total Fatalities by County, 3/7/2020 - ', ''), inplace=True)
 
-# change the 1 to "dates"
+# change the 1 to a str
 c_cov.iloc[1,0] = str(c_cov.iloc[1,0])
-# c_cov.iloc[1,0] = 'dates'
-
-print(c_cov.iloc[:4,:2])
 
 #make the columns the right ones:
 new_header = c_cov.iloc[1] #grab the first row for the header
@@ -64,16 +56,16 @@ c_cov.rename(columns=lambda x: x.strip()\
 # # # filter out everything but tarrant county
 tarrant_df = c_cov[[ 'dates', 'tarrant']].reset_index()
 
-print(tarrant_df.head())
 
 # #make data integers:
 # tarrant_df.iloc[1:,2] = pd.to_numeric(tarrant_df.iloc[1:,2], downcast='integer')
+tarrant_df.tarrant = pd.to_numeric(tarrant_df.tarrant, downcast='integer')
 
 # #variable for today's deaths
 # today_deaths = tarrant_df.iloc[-1,2]
 
 # #to get deaths each day you must subtract today from 8 days ago.  making 8 days the zero
-# week_ago_deaths = tarrant_df.iloc[-8,2]
+# week_ago_deaths = tarrant_df.iloc[-8,2] 
 
 # two_week_ago_deaths = tarrant_df.iloc[-15,2]
 
@@ -127,16 +119,14 @@ print(tarrant_df.head())
 # # updated_last_seven_ave = (most_recent_updated_death_total - week_before_mrud_total) / 7
 # # print(updated_last_seven_ave)
 
-
-
 # #print bar graph of Tarrant County Deaths
-# fig, ax = plt.subplots(figsize=(10, 6))
-# ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-# ax.bar(tarrant_df.iloc[-(len(tarrant_df.dates)-1):,1], tarrant_df.iloc[-(len(tarrant_df.dates)-1):,2], width=0.8, align='center')
-# plt.xlabel('Dates')
-# plt.ylabel('Deaths')
-# plt.title('Tarrant County Total Covid Deaths over Time')
-# plt.show()
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+ax.bar(tarrant_df.dates, tarrant_df.tarrant, width=0.8, align='center')
+plt.xlabel('Dates')
+plt.ylabel('Deaths')
+plt.title('Tarrant County Total Covid Deaths over Time')
+plt.show()
 
 # ###
 
