@@ -8,54 +8,72 @@ from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 
 
-#download deaths file from Texas health dept.
-dls = "https://dshs.texas.gov/coronavirus/TexasCOVID19DailyCountyFatalityCountData.xlsx"
-urllib.request.urlretrieve(dls, "test.xlsx")
+# #download deaths file from Texas health dept.
+# dls = "https://dshs.texas.gov/coronavirus/TexasCOVID19DailyCountyFatalityCountData.xlsx"
+# urllib.request.urlretrieve(dls, "texas_covid_data.xlsx")
 
-#import xl file from local folder
-data_xls = pd.read_excel('test.xlsx')
-data_xls.to_csv('new_covid_test.csv', encoding='utf-8')
-c_cov = pd.read_csv('new_covid_test.csv')
+# #import xl file from local folder
+# data_xls = pd.read_excel('texas_covid_data.xlsx')
+# data_xls.to_csv('texas_covid_data.csv', encoding='utf-8')
+texas = pd.read_csv('texas_covid_data.csv')
 
-#shorten the publishing date info in c_cov
-c_cov.rename(columns=lambda x: x.replace('COVID-19 Total Fatalities by County, 3/7/2020 - ', ''), inplace=True)
+## NYT
+# #download deaths files from NYT's github.
+# dls = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
+# urllib.request.urlretrieve(dls, "nyt_county_covid_data.csv")
+nyt = pd.read_csv('nyt_county_covid_data.csv')
 
-# change the 1 to a str
-c_cov.iloc[1,0] = str(c_cov.iloc[1,0])
+#run filters on all county and state columns to snake it all for easy search
+nyt.state = nyt.state.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
+nyt.county = nyt.county.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
+
+#filter out all texas data then all Tarrant county data
+nyt_filtered = nyt[nyt.state =='texas']
+nyt_filtered = nyt[nyt.county =='tarrant']
+# nyt_filtered.rename(columns=lambda x: x.replace('county', 'nyt_county'), inplace=True)
+nyt_pivot = nyt_filtered.pivot(columns='county',
+         index='date',
+         values='deaths')
+
+
+
+
+##Texas
+#shorten the publishing date info in texas 
+texas.rename(columns=lambda x: x.replace('COVID-19 Total Fatalities by County, 3/7/2020 - ', ''), inplace=True)
 
 #make the columns the right ones:
-new_header = c_cov.iloc[1] #grab the first row for the header
-c_cov = c_cov[2:] #take the data less the header row
-c_cov.columns = new_header #set the header row as the df header
+new_header = texas.iloc[1] #grab the first row for the header
+texas = texas[2:] #take the data less the header row
+texas.columns = new_header #set the header row as the df header
 
 #set index
-c_cov = c_cov.iloc[:, 1:] #take the data less the first two columns or so
+texas = texas.iloc[:, 1:] #take the data less the first two columns or so
 
-c_cov = c_cov.set_index('County Name')
+texas = texas.set_index('County Name')
 # then transpose
-c_cov = c_cov.T
+texas = texas.T
 # reset index
-c_cov = c_cov.reset_index()
+texas = texas.reset_index()
 
 
 
 # After pivot & datetime clenup, change the cell above the dates from 'county name' to 'dates:
 
-# # parse into datetime and shortent to date()
-c_cov.iloc[:,0] = c_cov.iloc[:,0].apply(lambda x: parse(x).date())
+# parse into datetime and shortent to date()
+texas.iloc[:,0] = texas.iloc[:,0].apply(lambda x: parse(x).date())
 
 #make all the column names aka headers strings (cause the first one wasnt for like NO REASON)
-c_cov.columns = [str(i) for i in c_cov.columns.values.tolist()]
-c_cov.rename(columns=lambda x: x.replace('1', 'dates'), inplace=True)  
+texas.columns = [str(i) for i in texas.columns.values.tolist()]
+texas.rename(columns=lambda x: x.replace('1', 'dates'), inplace=True)  
 
 #clean county names and everything else that will be column headers
-c_cov.rename(columns=lambda x: x.strip()\
+texas.rename(columns=lambda x: x.strip()\
                                 .lower().replace(' ', '_').replace('(', '').replace(')', '')\
                                 , inplace=True)
 
-# # # filter out everything but tarrant county
-tarrant_df = c_cov[[ 'dates', 'tarrant']].reset_index()
-
+# filter out everything but tarrant county
+tarrant_df = texas[[ 'dates', 'tarrant']].reset_index()
 
 # #make data integers:
 # tarrant_df.iloc[1:,2] = pd.to_numeric(tarrant_df.iloc[1:,2], downcast='integer')
@@ -120,13 +138,13 @@ tarrant_df.tarrant = pd.to_numeric(tarrant_df.tarrant, downcast='integer')
 # # print(updated_last_seven_ave)
 
 # #print bar graph of Tarrant County Deaths
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-ax.bar(tarrant_df.dates, tarrant_df.tarrant, width=0.8, align='center')
-plt.xlabel('Dates')
-plt.ylabel('Deaths')
-plt.title('Tarrant County Total Covid Deaths over Time')
-plt.show()
+    # fig, ax = plt.subplots(figsize=(10, 6))
+    # ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+    # ax.bar(tarrant_df.dates, tarrant_df.tarrant, width=0.8, align='center')
+    # plt.xlabel('Dates')
+    # plt.ylabel('Deaths')
+    # plt.title('Tarrant County Total Covid Deaths over Time')
+    # plt.show()
 
 # ###
 
