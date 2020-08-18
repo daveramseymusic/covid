@@ -7,19 +7,19 @@ from dateutil.parser import parse
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 
-# # download deaths file from Texas health dept.
-# dls = "https://dshs.texas.gov/coronavirus/TexasCOVID19DailyCountyFatalityCountData.xlsx"
-# urllib.request.urlretrieve(dls, "texas_covid_data.xlsx")
+# download deaths file from Texas health dept.
+dls = "https://dshs.texas.gov/coronavirus/TexasCOVID19DailyCountyFatalityCountData.xlsx"
+urllib.request.urlretrieve(dls, "texas_covid_data.xlsx")
 
-# #import xl file from local folder and convert to csv
-# data_xls = pd.read_excel('texas_covid_data.xlsx')
-# data_xls.to_csv('texas_covid_data.csv', encoding='utf-8')
+#import xl file from local folder and convert to csv
+data_xls = pd.read_excel('texas_covid_data.xlsx')
+data_xls.to_csv('texas_covid_data.csv', encoding='utf-8')
 texas = pd.read_csv('texas_covid_data.csv')
 
 # # NYT
-# # download deaths files from NYT's github.
-# dls = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
-# urllib.request.urlretrieve(dls, "nyt_county_covid_data.csv")
+# download deaths files from NYT's github.
+dls = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
+urllib.request.urlretrieve(dls, "nyt_county_covid_data.csv")
 nyt = pd.read_csv('nyt_county_covid_data.csv')
 
 #run filters on all county and state columns to snake it all for easy search
@@ -142,26 +142,31 @@ print(death_merge.head())
 
 # plt.savefig('lucky_stuff.png')
 
-plt.figure(figsize=(14, 7))
+
+fig=plt.figure(figsize=(14, 7))
+
 ax1 = plt.subplot(2, 2, 1)
 ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
 ax1.bar(tarrant_df.date, death_merge.tarrant_nyt_deaths, width=0.8, align='center')
 plt.ylabel('Deaths')
-plt.title('Tarrant County Total Covid Deaths over Time')
+plt.title('Tarrant County')
 
+#print graph of Philadelphia Cty Death
 ax2 = plt.subplot(2, 2, 2)
 ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
 ax2.bar(tarrant_df.date, death_merge.philadelphia , width=0.8, align='center')
 plt.ylabel('Deaths')
-plt.title('Philadelphia')
+plt.title('Philadelphia County')
 
+#print San Diego Deaths
 ax3 = plt.subplot(2, 2, 3)
 ax3.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
 ax3.bar(tarrant_df.date, death_merge.san_diego , width=0.8, align='center')
 plt.xlabel('Dates')
 plt.ylabel('Deaths')
-plt.title('San Diego')
+plt.title('San Diego County')
 
+#print Douglas Cty Deaths
 ax4 = plt.subplot(2, 2, 4)
 ax4.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
 ax4.bar(tarrant_df.date, death_merge.douglas , width=0.8, align='center')
@@ -169,20 +174,10 @@ plt.xlabel('Dates')
 plt.ylabel('Deaths')
 plt.title('Douglas County')
 
+fig.suptitle('Total Covid Deaths per County Over Time (NyTimes Data)') # or plt.suptitle('Main title')
 plt.show()
 
-# fig, ax = plt.subplots(figsize=(10, 6))
-# ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-# ax.bar(tarrant_df.date, death_merge.tarrant_nyt_deaths, width=0.8, align='center')
-# plt.xlabel('Dates')
-# plt.ylabel('Deaths')
-# plt.title('Tarrant County Total Covid Deaths over Time')
-
-# plt.show()
-
-#print graph of Philadelphia Cty Death
-#print San Diego Deaths
-#print Douglas Cty Deaths
+plt.savefig('covid_deaths_four_counties.png')
 
 
 # ## double bar graph code
